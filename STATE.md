@@ -17,6 +17,7 @@
 - Create environment: `python -m venv .venv`
 - Activate on Windows PowerShell: `.venv\Scripts\Activate.ps1`
 - Install dependencies: `python -m pip install -r requirements.txt`
+- Install local package: `python -m pip install -e .`
 - Run tests: `python -m pytest`
 - Corpus stats: `python -m staysmart.data data/raw`
 - Build index: `python -m staysmart.build_index data/raw data/processed/index.pkl`
@@ -27,7 +28,8 @@
 ## Verified
 - `python --version` -> `Python 3.14.0`
 - `.venv\Scripts\python -m pip install -r requirements.txt` -> installed pinned requirements.
-- `.venv\Scripts\python -m pytest` -> `12 passed, 1 warning in 3.36s`
+- `.venv\Scripts\python -m pip install -e .` -> installed `staysmart-0.1.0`
+- `.venv\Scripts\python -m pytest` -> `12 passed, 1 warning in 3.93s`
 - `.venv\Scripts\python -c "import fastapi, sklearn, pytest, uvicorn, rank_bm25; ..."` -> `fastapi 0.118.0; sklearn 1.7.2; pytest 8.4.2; uvicorn 0.37.0; rank_bm25 import ok`
 
 ## Decisions

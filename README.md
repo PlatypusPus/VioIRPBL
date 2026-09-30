@@ -8,6 +8,7 @@ StaySmart is a local review search system for accommodation reviews. It loads ow
 python -m venv .venv
 .venv\Scripts\Activate.ps1
 python -m pip install -r requirements.txt
+python -m pip install -e .
 python -m pytest
 ```
 
@@ -87,4 +88,3 @@ quiet room,r456,0
 ```
 
 Relevance is owner judged: `0` not relevant, `1` partly relevant, `2` relevant.
-
