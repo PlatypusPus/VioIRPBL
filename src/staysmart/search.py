@@ -7,6 +7,7 @@ from pathlib import Path
 
 from .data import Passage, load_corpus
 from .ranking import Ranker, ScoreBreakdown
+from .store import load_engine
 from .text import tokenize
 
 
@@ -74,11 +75,12 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("query")
     parser.add_argument("--data", default="data/raw")
+    parser.add_argument("--index")
     parser.add_argument("--limit", type=int, default=5)
     parser.add_argument("--reference-date")
     args = parser.parse_args(argv)
     reference_date = date.fromisoformat(args.reference_date) if args.reference_date else None
-    engine = SearchEngine.from_raw_dir(Path(args.data), reference_date=reference_date)
+    engine = load_engine(Path(args.index)) if args.index else SearchEngine.from_raw_dir(Path(args.data), reference_date=reference_date)
     for rank, result in enumerate(engine.search(args.query, limit=args.limit), 1):
         print(f"{rank}. {result.listing_name} ({result.review_date}) score={result.score:.3f}")
         print(f"   {result.snippet}")
@@ -87,4 +89,3 @@ def main(argv: list[str] | None = None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

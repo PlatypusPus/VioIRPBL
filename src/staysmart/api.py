@@ -6,6 +6,7 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import HTMLResponse
 
 from .search import SearchEngine
+from .store import load_engine
 
 
 def create_app(engine: SearchEngine | None = None) -> FastAPI:
@@ -14,6 +15,10 @@ def create_app(engine: SearchEngine | None = None) -> FastAPI:
 
     def get_engine() -> SearchEngine:
         if cache["engine"] is None:
+            index_path = os.getenv("STAYSMART_INDEX_PATH")
+            if index_path:
+                cache["engine"] = load_engine(Path(index_path))
+                return cache["engine"]
             raw_dir = Path(os.getenv("STAYSMART_DATA_DIR", "data/raw"))
             reference = os.getenv("STAYSMART_REFERENCE_DATE")
             reference_date = date.fromisoformat(reference) if reference else None
@@ -91,4 +96,3 @@ form.addEventListener("submit", async (event) => {
 
 
 app = create_app()
-

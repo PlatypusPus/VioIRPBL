@@ -75,7 +75,7 @@ class Ranker:
         phrase = phrase_score(query_tokens, passage.tokens)
         proximity = proximity_score(query_tokens, passage.tokens)
         recency = recency_factor(passage.review_date, self.reference_date, self.half_life_years, self.recency_floor)
-        relevance = bm25 + (0.5 * tfidf) + phrase + proximity
+        relevance = max(0.0, bm25) + (0.5 * tfidf) + phrase + proximity
         return ScoreBreakdown(bm25, tfidf, phrase, proximity, recency, relevance * recency)
 
     def _tfidf_score(self, query_tokens: list[str], index: int) -> float:
@@ -145,4 +145,3 @@ def _positions(passages: list[Passage]) -> dict[str, dict[str, list[int]]]:
         for position, token in enumerate(passage.tokens):
             index[token][passage.passage_id].append(position)
     return {term: dict(postings) for term, postings in index.items()}
-
