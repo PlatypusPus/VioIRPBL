@@ -1,4 +1,5 @@
 import csv
+import gzip
 import json
 import random
 import sys
@@ -38,6 +39,9 @@ class Passage:
 
 
 def read_rows(path: Path) -> list[dict[str, str]]:
+    if path.suffixes[-2:] == [".csv", ".gz"]:
+        with gzip.open(path, "rt", newline="", encoding="utf-8-sig") as handle:
+            return list(csv.DictReader(handle))
     if path.suffix.lower() == ".jsonl":
         return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
     if path.suffix.lower() == ".json":
@@ -93,8 +97,8 @@ def load_listings(path: Path) -> dict[str, dict[str, object]]:
 
 
 def load_corpus(raw_dir: Path) -> list[Passage]:
-    review_path = _first_existing(raw_dir, ("reviews.csv", "reviews.jsonl", "reviews.json"))
-    listing_path = _first_existing(raw_dir, ("listings.csv", "listings.jsonl", "listings.json"), required=False)
+    review_path = _first_existing(raw_dir, ("reviews.csv", "reviews.csv.gz", "reviews.jsonl", "reviews.json"))
+    listing_path = _first_existing(raw_dir, ("listings.csv", "listings.csv.gz", "listings.jsonl", "listings.json"), required=False)
     listings = load_listings(listing_path) if listing_path else {}
     reviews = normalise_reviews(read_rows(review_path), listings or None)
     if listings:
@@ -157,8 +161,13 @@ def main(argv: list[str] | None = None) -> int:
     passages = load_corpus(raw_dir)
     print(corpus_stats(passages))
     for passage in random.Random(0).sample(passages, min(20, len(passages))):
-        print(f"{passage.passage_id}\t{passage.listing_name}\t{passage.text}")
+        print(_console_safe(f"{passage.passage_id}\t{passage.listing_name}\t{passage.text}"))
     return 0
+
+
+def _console_safe(value: str) -> str:
+    encoding = sys.stdout.encoding or "utf-8"
+    return value.encode(encoding, errors="replace").decode(encoding)
 
 
 if __name__ == "__main__":

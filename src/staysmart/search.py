@@ -1,5 +1,6 @@
 import argparse
 import re
+import sys
 from dataclasses import asdict, dataclass
 from datetime import date
 from html import escape
@@ -82,9 +83,14 @@ def main(argv: list[str] | None = None) -> int:
     reference_date = date.fromisoformat(args.reference_date) if args.reference_date else None
     engine = load_engine(Path(args.index)) if args.index else SearchEngine.from_raw_dir(Path(args.data), reference_date=reference_date)
     for rank, result in enumerate(engine.search(args.query, limit=args.limit), 1):
-        print(f"{rank}. {result.listing_name} ({result.review_date}) score={result.score:.3f}")
-        print(f"   {result.snippet}")
+        print(_console_safe(f"{rank}. {result.listing_name} ({result.review_date}) score={result.score:.3f}"))
+        print(_console_safe(f"   {result.snippet}"))
     return 0
+
+
+def _console_safe(value: str) -> str:
+    encoding = sys.stdout.encoding or "utf-8"
+    return value.encode(encoding, errors="replace").decode(encoding)
 
 
 if __name__ == "__main__":

@@ -10,6 +10,7 @@
 - Phase 6 implemented: owner-judgment evaluation metrics and `eval/results.md` writer.
 - Phase 7 implemented: FastAPI `/search` endpoint and minimal local web page.
 - Index persistence implemented with `python -m staysmart.build_index`.
+- Dataset created from Inside Airbnb Bangkok public downloads in `data/raw/`.
 - Git repository initialised in `E:\Vio`.
 - Verified dependency imports for FastAPI, scikit-learn, pytest, uvicorn and rank_bm25.
 
@@ -30,6 +31,9 @@
 - `.venv\Scripts\python -m pip install -r requirements.txt` -> installed pinned requirements.
 - `.venv\Scripts\python -m pip install -e .` -> installed `staysmart-0.1.0`
 - `.venv\Scripts\python -m pytest` -> `12 passed, 1 warning in 3.93s`
+- `.venv\Scripts\python -m staysmart.data data/raw` -> `{'passages': 25453, 'reviews': 8608, 'listings': 242, 'avg_tokens': 10.44}`
+- `.venv\Scripts\python -m staysmart.build_index data/raw data/processed/index.pkl` -> `wrote data\processed\index.pkl`
+- `.venv\Scripts\python -m staysmart.search "clean bathroom" --index data/processed/index.pkl --limit 3` -> returned ranked Bangkok review snippets with highlighted `clean` and `bathroom`.
 - `.venv\Scripts\python -c "import fastapi, sklearn, pytest, uvicorn, rank_bm25; ..."` -> `fastapi 0.118.0; sklearn 1.7.2; pytest 8.4.2; uvicorn 0.37.0; rank_bm25 import ok`
 
 ## Decisions
@@ -40,10 +44,9 @@
 - Keep evaluation dependent on owner judgments only.
 
 ## Known Issues
-- No owner dataset is present in `data/raw/` yet.
-- Real corpus size, cities, license and hotel-room coverage are unknown until the owner adds data.
 - Evaluation cannot produce meaningful results until `eval/judgments.csv` is filled by the owner.
-- API returns 503 until data or `STAYSMART_INDEX_PATH` is available.
+- Bangkok has many multilingual listing names and reviews; Windows console output replaces unsupported characters.
+- Indian cities were not used because the selected public source did not list an India dataset on its download page.
 
 ## Next Phase
-- Add the owner dataset to `data/raw/`, run corpus stats, fill judgments, then review result quality.
+- Fill `eval/judgments.csv`, run evaluation, then review result quality.
