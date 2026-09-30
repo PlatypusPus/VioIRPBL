@@ -18,6 +18,15 @@ def engine():
                     "listing_name": "Hotel One",
                     "review_text": "Quiet room and clean bathroom.",
                     "review_date": "2025-01-01",
+                    "city": "Siam",
+                },
+                {
+                    "review_id": "r2",
+                    "listing_id": "2",
+                    "listing_name": "Hotel Two",
+                    "review_text": "Quiet room near the river.",
+                    "review_date": "2025-01-01",
+                    "city": "Riverside",
                 }
             ]
         )
@@ -33,6 +42,16 @@ def test_api_search_returns_ranked_results():
     assert response.status_code == 200
     assert response.json()["results"][0]["listing_name"] == "Hotel One"
     assert response.json()["results"][0]["listing_url"] == "https://www.airbnb.com/rooms/1"
+
+
+def test_api_exposes_and_applies_location_filter():
+    client = TestClient(create_app(engine()))
+
+    assert client.get("/locations").json()["locations"] == ["Riverside", "Siam"]
+    response = client.get("/search", params={"q": "quiet room", "city": "Riverside"})
+
+    assert response.status_code == 200
+    assert response.json()["results"][0]["listing_name"] == "Hotel Two"
 
 
 def test_metrics_compute_precision_and_ndcg():

@@ -40,10 +40,15 @@ class SearchEngine:
     def from_raw_dir(cls, raw_dir: Path, reference_date: date | None = None) -> "SearchEngine":
         return cls(load_corpus(raw_dir), reference_date=reference_date)
 
-    def search(self, query: str, limit: int = 10) -> list[SearchResult]:
+    def locations(self) -> list[str]:
+        return sorted({passage.city for passage in self.passages if passage.city})
+
+    def search(self, query: str, limit: int = 10, city: str | None = None) -> list[SearchResult]:
         best_by_review: dict[str, SearchResult] = {}
         terms = tokenize(query)
         for index, passage in enumerate(self.passages):
+            if city and passage.city != city:
+                continue
             breakdown = self.ranker.score(query, index)
             if breakdown.final <= 0:
                 continue

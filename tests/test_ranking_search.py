@@ -71,3 +71,10 @@ def test_search_deduplicates_reviews_and_keeps_relevance_over_weak_recency():
     assert "<mark>clean</mark> <mark>bathroom</mark>" in results[0].snippet.lower()
     assert len({result.review_id for result in results}) == len(results)
 
+
+def test_search_filters_by_city():
+    engine = SearchEngine(passages(), reference_date=date(2026, 1, 1))
+
+    results = engine.search("bathroom", city="Far Hotel City")
+
+    assert results == []
