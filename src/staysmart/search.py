@@ -21,6 +21,7 @@ class SearchResult:
     review_date: str
     rating: str | None
     city: str | None
+    listing_url: str | None
     score: float
     breakdown: ScoreBreakdown
 
@@ -54,6 +55,7 @@ class SearchEngine:
                 review_date=passage.review_date,
                 rating=passage.rating,
                 city=passage.city,
+                listing_url=passage.listing_url,
                 score=breakdown.final,
                 breakdown=breakdown,
             )

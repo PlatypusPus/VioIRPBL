@@ -32,6 +32,7 @@ def test_api_search_returns_ranked_results():
 
     assert response.status_code == 200
     assert response.json()["results"][0]["listing_name"] == "Hotel One"
+    assert response.json()["results"][0]["listing_url"] == "https://www.airbnb.com/rooms/1"
 
 
 def test_metrics_compute_precision_and_ndcg():
@@ -43,4 +44,3 @@ def test_evaluate_uses_owner_judgments():
     rows = evaluate(engine(), {"quiet room": {"r1": 2}}, k=1)
 
     assert rows == [{"query": "quiet room", "p@1": 1.0, "ndcg@1": 1.0}]
-

@@ -55,6 +55,7 @@ INDEX_HTML = """<!doctype html>
     article { background: white; border: 1px solid #dde1e6; border-radius: 8px; padding: 16px; margin: 12px 0; }
     h1 { margin: 0; font-size: 32px; }
     h2 { margin: 0 0 8px; font-size: 18px; }
+    a[target="_blank"] { display: inline-block; margin-top: 8px; color: #155eef; font-weight: 600; }
     mark { background: #fff1a8; }
     .meta { color: #5f6368; font-size: 14px; }
   </style>
@@ -84,12 +85,22 @@ form.addEventListener("submit", async (event) => {
   const data = await response.json();
   results.innerHTML = data.results.map((item) => `
     <article>
-      <h2>${item.listing_name}</h2>
+      <h2>${escapeHtml(item.listing_name)}</h2>
       <div class="meta">${item.review_date} · score ${item.score.toFixed(3)}</div>
       <p>${item.snippet}</p>
+      ${safeAirbnbUrl(item.listing_url) ? `<a href="${safeAirbnbUrl(item.listing_url)}" target="_blank" rel="noopener noreferrer">Open listing</a>` : ""}
     </article>
   `).join("") || "No matches.";
 });
+function escapeHtml(value) {
+  return String(value).replace(/[&<>"']/g, (char) => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
+  }[char]));
+}
+function safeAirbnbUrl(value) {
+  const text = String(value || "");
+  return text.startsWith("https://www.airbnb.com/rooms/") ? text : "";
+}
 </script>
 </body>
 </html>"""

@@ -23,6 +23,7 @@ class Review:
     review_date: str
     rating: str | None = None
     city: str | None = None
+    listing_url: str | None = None
 
 
 @dataclass(frozen=True)
@@ -36,6 +37,7 @@ class Passage:
     review_date: str
     rating: str | None = None
     city: str | None = None
+    listing_url: str | None = None
 
 
 def read_rows(path: Path) -> list[dict[str, str]]:
@@ -76,6 +78,7 @@ def normalise_reviews(rows: Iterable[dict[str, object]], listings: dict[str, dic
                 review_date=review_date,
                 rating=_optional(row.get("rating") or row.get("review_scores_rating") or listing.get("review_scores_rating")),
                 city=_optional(row.get("city") or listing.get("city") or listing.get("neighbourhood_cleansed")),
+                listing_url=_listing_url(row.get("listing_url") or listing.get("listing_url"), listing_id),
             )
         )
 
@@ -123,6 +126,7 @@ def build_passages(reviews: Iterable[Review], window_size: int = 30) -> list[Pas
                         review_date=review.review_date,
                         rating=review.rating,
                         city=review.city,
+                        listing_url=review.listing_url,
                     )
                 )
     return passages
@@ -153,6 +157,13 @@ def _first_existing(raw_dir: Path, names: tuple[str, ...], required: bool = True
 def _optional(value: object) -> str | None:
     text = clean_text(value)
     return text or None
+
+
+def _listing_url(value: object, listing_id: str) -> str | None:
+    text = clean_text(value)
+    if text.startswith("https://www.airbnb.com/rooms/"):
+        return text
+    return f"https://www.airbnb.com/rooms/{listing_id}" if listing_id else None
 
 
 def main(argv: list[str] | None = None) -> int:

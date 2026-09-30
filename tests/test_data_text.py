@@ -21,6 +21,7 @@ def test_normalise_reviews_maps_inside_airbnb_rows():
     assert reviews[0].review_id == "r1"
     assert reviews[0].listing_name == "Hotel Blue"
     assert reviews[0].city == "Paris"
+    assert reviews[0].listing_url == "https://www.airbnb.com/rooms/10"
 
 
 def test_load_corpus_filters_to_hotel_rooms(tmp_path: Path):
@@ -47,4 +48,3 @@ def test_build_passages_and_stats():
 
     assert [passage.text for passage in passages] == ["Clean.", "Quiet."]
     assert corpus_stats(passages)["reviews"] == 1
-
