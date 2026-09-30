@@ -1,5 +1,7 @@
 import csv
 import json
+import random
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable
@@ -148,3 +150,16 @@ def _optional(value: object) -> str | None:
     text = clean_text(value)
     return text or None
 
+
+def main(argv: list[str] | None = None) -> int:
+    args = argv if argv is not None else sys.argv[1:]
+    raw_dir = Path(args[0]) if args else Path("data/raw")
+    passages = load_corpus(raw_dir)
+    print(corpus_stats(passages))
+    for passage in random.Random(0).sample(passages, min(20, len(passages))):
+        print(f"{passage.passage_id}\t{passage.listing_name}\t{passage.text}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
