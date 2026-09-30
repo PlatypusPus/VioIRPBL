@@ -1,0 +1,2 @@
+"""StaySmart review search package."""
+
